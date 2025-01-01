@@ -2,6 +2,7 @@ import cssVariables from "./css/variables.module.scss";
 import type { AppProps, AppState } from "./types";
 import type { ExcalidrawElement, FontFamilyValues } from "./element/types";
 import { COLOR_PALETTE } from "./colors";
+import { LXGWWenKaiFontFaces } from "./fonts/LXGWWenKai";
 
 export const isDarwin = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 export const isWindows = /^Win/.test(navigator.platform);
@@ -133,6 +134,7 @@ export const FONT_FAMILY = {
   Helvetica: 2,
   Cascadia: 3,
   // leave 4 unused as it was historically used for Assistant (which we don't use anymore) or custom font (Obsidian)
+  LXGWWenKai: 4,
   Excalifont: 5,
   Nunito: 6,
   "Lilita One": 7,

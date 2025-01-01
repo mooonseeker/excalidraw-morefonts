@@ -20,6 +20,7 @@ import { ExcalifontFontFaces } from "./Excalifont";
 import { HelveticaFontFaces } from "./Helvetica";
 import { LiberationFontFaces } from "./Liberation";
 import { LilitaFontFaces } from "./Lilita";
+import { LXGWWenKaiFontFaces } from "./LXGWWenKai";
 import { NunitoFontFaces } from "./Nunito";
 import { VirgilFontFaces } from "./Virgil";
 import { XiaolaiFontFaces } from "./Xiaolai";
@@ -40,12 +41,12 @@ export class Fonts {
 
   private static _registered:
     | Map<
-        number,
-        {
-          metadata: FontMetadata;
-          fontFaces: ExcalidrawFontFace[];
-        }
-      >
+      number,
+      {
+        metadata: FontMetadata;
+        fontFaces: ExcalidrawFontFace[];
+      }
+    >
     | undefined;
 
   private static _initialized: boolean = false;
@@ -342,11 +343,11 @@ export class Fonts {
     this:
       | Fonts
       | {
-          registered: Map<
-            number,
-            { metadata: FontMetadata; fontFaces: ExcalidrawFontFace[] }
-          >;
-        },
+        registered: Map<
+          number,
+          { metadata: FontMetadata; fontFaces: ExcalidrawFontFace[] }
+        >;
+      },
     family: string,
     metadata: FontMetadata,
     ...fontFacesDecriptors: ExcalidrawFontFaceDescriptor[]
@@ -405,6 +406,7 @@ export class Fonts {
     // used for server-side pdf & png export instead of helvetica (technically does not need metrics, but kept in for consistency)
     init("Liberation Sans", ...LiberationFontFaces);
     init("Lilita One", ...LilitaFontFaces);
+    init("LXGWWenKai", ...LXGWWenKaiFontFaces);
     init("Nunito", ...NunitoFontFaces);
     init("Virgil", ...VirgilFontFaces);
 

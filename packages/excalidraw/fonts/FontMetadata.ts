@@ -3,6 +3,7 @@ import {
   FontFamilyNormalIcon,
   FontFamilyHeadingIcon,
   FontFamilyCodeIcon,
+  FontFamilyStarIcon,
 } from "../components/icons";
 import { FONT_FAMILY, FONT_FAMILY_FALLBACKS } from "../constants";
 
@@ -69,6 +70,15 @@ export const FONT_METADATA: Record<number, FontMetadata> = {
       lineHeight: 1.25,
     },
     icon: FontFamilyCodeIcon,
+  },
+  [FONT_FAMILY.LXGWWenKai]: {
+    metrics: {
+      unitsPerEm: 1000,
+      ascender: 880,
+      descender: -144,
+      lineHeight: 1.15,
+    },
+    icon: FontFamilyStarIcon,
   },
   [FONT_FAMILY.Virgil]: {
     metrics: {
