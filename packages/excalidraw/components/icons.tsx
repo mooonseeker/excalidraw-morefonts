@@ -6,12 +6,13 @@
 // Note: when adding new icons, review https://developer.mozilla.org/en-US/docs/Mozilla/Developer_guide/RTL_Guidelines
 // to determine whether or not the icons should be mirrored in right-to-left languages.
 
+import clsx from "clsx";
+import oc from "open-color";
 import React from "react";
 
-import oc from "open-color";
-import clsx from "clsx";
-import type { Theme } from "../element/types";
-import { THEME } from "../constants";
+import { THEME } from "@excalidraw/common";
+
+import type { Theme } from "@excalidraw/element/types";
 
 export const iconFillColor = (theme: Theme) => "var(--icon-fill-color)";
 
@@ -1216,11 +1217,12 @@ export const EdgeRoundIcon = createIcon(
 );
 
 export const ArrowheadNoneIcon = createIcon(
-  <path d="M6 10H34" stroke="currentColor" strokeWidth={2} fill="none" />,
-  {
-    width: 40,
-    height: 20,
-  },
+  <g stroke="currentColor" opacity={0.3} strokeWidth={2}>
+    <path d="M12 12l9 0" />
+    <path d="M3 9l6 6" />
+    <path d="M3 15l6 -6" />
+  </g>,
+  tablerIconProps,
 );
 
 export const ArrowheadArrowIcon = React.memo(
@@ -1347,6 +1349,54 @@ export const ArrowheadDiamondOutlineIcon = React.memo(
       >
         <path d="M6,9.5H20" />
         <path d="M27,5L34,10L27,14L20,9.5Z" />
+      </g>,
+      { width: 40, height: 20 },
+    ),
+);
+
+export const ArrowheadCrowfootIcon = React.memo(
+  ({ flip = false }: { flip?: boolean }) =>
+    createIcon(
+      <g
+        stroke="currentColor"
+        fill="none"
+        transform={flip ? "" : "translate(40, 0) scale(-1, 1)"}
+        strokeLinejoin="round"
+        strokeWidth={2}
+      >
+        <path d="M34,10 H6 M15,10 L7,5 M15,10 L7,15" />
+      </g>,
+      { width: 40, height: 20 },
+    ),
+);
+
+export const ArrowheadCrowfootOneIcon = React.memo(
+  ({ flip = false }: { flip?: boolean }) =>
+    createIcon(
+      <g
+        stroke="currentColor"
+        fill="none"
+        transform={flip ? "" : "translate(40, 0) scale(-1, 1)"}
+        strokeLinejoin="round"
+        strokeWidth={2}
+      >
+        <path d="M34,10 H6 M15,10 L15,15 L15,5" />
+      </g>,
+      { width: 40, height: 20 },
+    ),
+);
+
+export const ArrowheadCrowfootOneOrManyIcon = React.memo(
+  ({ flip = false }: { flip?: boolean }) =>
+    createIcon(
+      <g
+        stroke="currentColor"
+        fill="none"
+        transform={flip ? "" : "translate(40, 0) scale(-1, 1)"}
+        strokeLinejoin="round"
+        strokeWidth={2}
+      >
+        <path d="M34,10 H6 M15,10 L15,16 L15,4 M15,10 L7,5 M15,10 L7,15" />
       </g>,
       { width: 40, height: 20 },
     ),

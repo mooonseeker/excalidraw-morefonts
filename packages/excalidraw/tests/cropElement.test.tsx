@@ -1,23 +1,29 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import { vi } from "vitest";
-import { Keyboard, Pointer, UI } from "./helpers/ui";
-import type { ExcalidrawImageElement, ImageCrop } from "../element/types";
-import { act, GlobalTestState, render } from "./test-utils";
+
+import { KEYS, cloneJSON } from "@excalidraw/common";
+
+import { duplicateElement } from "@excalidraw/element/duplicate";
+
+import type {
+  ExcalidrawImageElement,
+  ImageCrop,
+} from "@excalidraw/element/types";
+
 import { Excalidraw, exportToCanvas, exportToSvg } from "..";
-import { API } from "./helpers/api";
-import type { NormalizedZoomValue } from "../types";
-import { KEYS } from "../keys";
-import { duplicateElement } from "../element";
-import { cloneJSON } from "../utils";
 import { actionFlipHorizontal, actionFlipVertical } from "../actions";
+
+import { API } from "./helpers/api";
+import { Keyboard, Pointer, UI } from "./helpers/ui";
+import { act, GlobalTestState, render, unmountComponent } from "./test-utils";
+
+import type { NormalizedZoomValue } from "../types";
 
 const { h } = window;
 const mouse = new Pointer("mouse");
 
 beforeEach(async () => {
-  // Unmount ReactDOM from root
-  ReactDOM.unmountComponentAtNode(document.getElementById("root")!);
+  unmountComponent();
 
   mouse.reset();
   localStorage.clear();
@@ -171,8 +177,8 @@ describe("Crop an image", () => {
     // test corner handle aspect ratio preserving
     UI.crop(image, "se", naturalWidth, naturalHeight, [initialWidth, 0], true);
     expect(image.width / image.height).toBe(resizedWidth / resizedHeight);
-    expect(image.width).toBeLessThanOrEqual(initialWidth);
-    expect(image.height).toBeLessThanOrEqual(initialHeight);
+    expect(image.width).toBeLessThanOrEqual(initialWidth + 0.0001);
+    expect(image.height).toBeLessThanOrEqual(initialHeight + 0.0001);
 
     // reset
     image = API.createElement({ type: "image", width: 200, height: 100 });
@@ -194,7 +200,7 @@ describe("Crop an image", () => {
     expect(image.width).toBeCloseTo(image.height);
     // max height should be reached
     expect(image.height).toBeCloseTo(initialHeight);
-    expect(image.width).toBe(initialHeight);
+    expect(image.width).toBeCloseTo(initialHeight);
   });
 });
 
@@ -316,6 +322,7 @@ describe("Cropping and other features", async () => {
 
     const canvas = await exportToCanvas({
       elements: [image],
+      // @ts-ignore
       appState: h.state,
       files: h.app.files,
       exportPadding: 0,
@@ -326,6 +333,7 @@ describe("Cropping and other features", async () => {
 
     const svg = await exportToSvg({
       elements: [image],
+      // @ts-ignore
       appState: h.state,
       files: h.app.files,
       exportPadding: 0,

@@ -1,19 +1,25 @@
+import { pointFrom, pointRotateRads } from "@excalidraw/math";
+import { useMemo } from "react";
+
+import { isTextElement } from "@excalidraw/element/typeChecks";
+
+import { getCommonBounds } from "@excalidraw/element/bounds";
+
 import type {
   ElementsMap,
   ExcalidrawElement,
   NonDeletedExcalidrawElement,
   NonDeletedSceneElementsMap,
-} from "../../element/types";
-import type Scene from "../../scene/Scene";
+} from "@excalidraw/element/types";
+
 import StatsDragInput from "./DragInput";
-import type { DragInputCallbackType } from "./DragInput";
 import { getAtomicUnits, getStepSizedValue, isPropertyEditable } from "./utils";
-import { getCommonBounds, isTextElement } from "../../element";
-import { useMemo } from "react";
 import { getElementsInAtomicUnit, moveElement } from "./utils";
+
+import type { DragInputCallbackType } from "./DragInput";
 import type { AtomicUnit } from "./utils";
+import type Scene from "../../scene/Scene";
 import type { AppState } from "../../types";
-import { pointFrom, pointRotateRads } from "../../../math";
 
 interface MultiPositionProps {
   property: "x" | "y";
@@ -237,6 +243,7 @@ const MultiPosition = ({
           const [x1, y1] = getCommonBounds(elementsInUnit);
           return Math.round((property === "x" ? x1 : y1) * 100) / 100;
         }
+
         const [el] = elementsInUnit;
         const [cx, cy] = [el.x + el.width / 2, el.y + el.height / 2];
 

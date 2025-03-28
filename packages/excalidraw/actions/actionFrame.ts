@@ -1,15 +1,29 @@
-import { getNonDeletedElements } from "../element";
-import type { ExcalidrawElement } from "../element/types";
-import { removeAllElementsFromFrame } from "../frame";
-import { getFrameChildren } from "../frame";
-import { KEYS } from "../keys";
-import type { AppClassProperties, AppState, UIAppState } from "../types";
-import { updateActiveTool } from "../utils";
+import { getNonDeletedElements } from "@excalidraw/element";
+import { mutateElement } from "@excalidraw/element/mutateElement";
+import { newFrameElement } from "@excalidraw/element/newElement";
+import { isFrameLikeElement } from "@excalidraw/element/typeChecks";
+import {
+  addElementsToFrame,
+  removeAllElementsFromFrame,
+} from "@excalidraw/element/frame";
+import { getFrameChildren } from "@excalidraw/element/frame";
+
+import { KEYS, updateActiveTool } from "@excalidraw/common";
+
+import { getElementsInGroup } from "@excalidraw/element/groups";
+
+import { getCommonBounds } from "@excalidraw/element/bounds";
+
+import type { ExcalidrawElement } from "@excalidraw/element/types";
+
 import { setCursorForShape } from "../cursor";
-import { register } from "./register";
-import { isFrameLikeElement } from "../element/typeChecks";
 import { frameToolIcon } from "../components/icons";
-import { StoreAction } from "../store";
+import { getSelectedElements } from "../scene";
+import { CaptureUpdateAction } from "../store";
+
+import { register } from "./register";
+
+import type { AppClassProperties, AppState, UIAppState } from "../types";
 
 const isSingleFrameSelected = (
   appState: UIAppState,
@@ -45,14 +59,14 @@ export const actionSelectAllElementsInFrame = register({
             return acc;
           }, {} as Record<ExcalidrawElement["id"], true>),
         },
-        storeAction: StoreAction.CAPTURE,
+        captureUpdate: CaptureUpdateAction.IMMEDIATELY,
       };
     }
 
     return {
       elements,
       appState,
-      storeAction: StoreAction.NONE,
+      captureUpdate: CaptureUpdateAction.EVENTUALLY,
     };
   },
   predicate: (elements, appState, _, app) =>
@@ -76,14 +90,14 @@ export const actionRemoveAllElementsFromFrame = register({
             [selectedElement.id]: true,
           },
         },
-        storeAction: StoreAction.CAPTURE,
+        captureUpdate: CaptureUpdateAction.IMMEDIATELY,
       };
     }
 
     return {
       elements,
       appState,
-      storeAction: StoreAction.NONE,
+      captureUpdate: CaptureUpdateAction.EVENTUALLY,
     };
   },
   predicate: (elements, appState, _, app) =>
@@ -105,7 +119,7 @@ export const actionupdateFrameRendering = register({
           enabled: !appState.frameRendering.enabled,
         },
       },
-      storeAction: StoreAction.NONE,
+      captureUpdate: CaptureUpdateAction.EVENTUALLY,
     };
   },
   checked: (appState: AppState) => appState.frameRendering.enabled,
@@ -135,7 +149,7 @@ export const actionSetFrameAsActiveTool = register({
           type: "frame",
         }),
       },
-      storeAction: StoreAction.NONE,
+      captureUpdate: CaptureUpdateAction.EVENTUALLY,
     };
   },
   keyTest: (event) =>
@@ -143,4 +157,68 @@ export const actionSetFrameAsActiveTool = register({
     !event.shiftKey &&
     !event.altKey &&
     event.key.toLocaleLowerCase() === KEYS.F,
+});
+
+export const actionWrapSelectionInFrame = register({
+  name: "wrapSelectionInFrame",
+  label: "labels.wrapSelectionInFrame",
+  trackEvent: { category: "element" },
+  predicate: (elements, appState, _, app) => {
+    const selectedElements = getSelectedElements(elements, appState);
+
+    return (
+      selectedElements.length > 0 &&
+      !selectedElements.some((element) => isFrameLikeElement(element))
+    );
+  },
+  perform: (elements, appState, _, app) => {
+    const selectedElements = getSelectedElements(elements, appState);
+
+    const [x1, y1, x2, y2] = getCommonBounds(
+      selectedElements,
+      app.scene.getNonDeletedElementsMap(),
+    );
+    const PADDING = 16;
+    const frame = newFrameElement({
+      x: x1 - PADDING,
+      y: y1 - PADDING,
+      width: x2 - x1 + PADDING * 2,
+      height: y2 - y1 + PADDING * 2,
+    });
+
+    // for a selected partial group, we want to remove it from the remainder of the group
+    if (appState.editingGroupId) {
+      const elementsInGroup = getElementsInGroup(
+        selectedElements,
+        appState.editingGroupId,
+      );
+
+      for (const elementInGroup of elementsInGroup) {
+        const index = elementInGroup.groupIds.indexOf(appState.editingGroupId);
+
+        mutateElement(
+          elementInGroup,
+          {
+            groupIds: elementInGroup.groupIds.slice(0, index),
+          },
+          false,
+        );
+      }
+    }
+
+    const nextElements = addElementsToFrame(
+      [...app.scene.getElementsIncludingDeleted(), frame],
+      selectedElements,
+      frame,
+      appState,
+    );
+
+    return {
+      elements: nextElements,
+      appState: {
+        selectedElementIds: { [frame.id]: true },
+      },
+      captureUpdate: CaptureUpdateAction.IMMEDIATELY,
+    };
+  },
 });

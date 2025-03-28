@@ -1,26 +1,31 @@
-import { isTransparent } from "../../utils";
-import type { ExcalidrawElement } from "../../element/types";
-import type { AppState } from "../../types";
-import { TopPicks } from "./TopPicks";
-import { ButtonSeparator } from "../ButtonSeparator";
-import { Picker } from "./Picker";
 import * as Popover from "@radix-ui/react-popover";
-import { useAtom } from "jotai";
-import type { ColorPickerType } from "./colorPickerUtils";
-import { activeColorPickerSectionAtom } from "./colorPickerUtils";
-import { useExcalidrawContainer } from "../App";
-import type { ColorTuple, ColorPaletteCustom } from "../../colors";
-import { COLOR_PALETTE } from "../../colors";
-import PickerHeading from "./PickerHeading";
-import { t } from "../../i18n";
 import clsx from "clsx";
 import { useRef } from "react";
-import { jotaiScope } from "../../jotai";
-import { ColorInput } from "./ColorInput";
+
+import { COLOR_PALETTE, isTransparent } from "@excalidraw/common";
+
+import type { ColorTuple, ColorPaletteCustom } from "@excalidraw/common";
+
+import type { ExcalidrawElement } from "@excalidraw/element/types";
+
+import { useAtom } from "../../editor-jotai";
+import { t } from "../../i18n";
+import { useExcalidrawContainer } from "../App";
+import { ButtonSeparator } from "../ButtonSeparator";
 import { activeEyeDropperAtom } from "../EyeDropper";
 import { PropertiesPopover } from "../PropertiesPopover";
 
+import { ColorInput } from "./ColorInput";
+import { Picker } from "./Picker";
+import PickerHeading from "./PickerHeading";
+import { TopPicks } from "./TopPicks";
+import { activeColorPickerSectionAtom } from "./colorPickerUtils";
+
 import "./ColorPicker.scss";
+
+import type { ColorPickerType } from "./colorPickerUtils";
+
+import type { AppState } from "../../types";
 
 const isValidColor = (color: string) => {
   const style = new Option().style;
@@ -76,10 +81,7 @@ const ColorPickerPopupContent = ({
   const { container } = useExcalidrawContainer();
   const [, setActiveColorPickerSection] = useAtom(activeColorPickerSectionAtom);
 
-  const [eyeDropperState, setEyeDropperState] = useAtom(
-    activeEyeDropperAtom,
-    jotaiScope,
-  );
+  const [eyeDropperState, setEyeDropperState] = useAtom(activeEyeDropperAtom);
 
   const colorInputJSX = (
     <div>
